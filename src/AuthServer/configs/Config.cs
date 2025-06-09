@@ -1,4 +1,5 @@
-﻿using Duende.IdentityServer.Models;
+﻿using Duende.IdentityModel;
+using Duende.IdentityServer.Models;
 
 namespace AuthServer.configs;
 
@@ -16,7 +17,14 @@ internal static class Config
     public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
-            new ApiScope("apis_study_project"),
+            new ApiScope("apis_study_project")
+            {
+                UserClaims =
+                {
+                    JwtClaimTypes.Name,
+                    JwtClaimTypes.Email
+                }
+            },
             new ApiScope("apis_exemplo")
         };
 
@@ -56,7 +64,12 @@ internal static class Config
                 ClientName = "API's de estudos",  // Nome do client para ser identificado de forma fácil
                 AllowedGrantTypes = GrantTypes.ClientCredentials,  // Tipo de fluxo de autenticação OAuth 2.0 (usado quando não há um usuário humano se autenticando)
                 ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },  // Segredo que o usuário usará para se logar (digamos que é uma senha)
-                AllowedScopes = { "apis_study_project" }  // Escopos que esse cliente tem permissão de acesso nas nossas API's (deve ser configurado as permissões na API)
+                
+                /* Dealhes importantes do AllowedScopes
+                 * O que eu definir abaixo (por exemplo "email", "profile", "openid") não será incluso no access_token, mas sim no id_token
+                 * O scope deve estar definido no IdentityResource caso contrário será gerado um erro
+                */ 
+                AllowedScopes = { "apis_study_project", "profile", "openid" },  // Escopos que esse cliente tem permissão de acesso nas nossas API's (deve ser configurado as permissões na API)
             }
         };
 }

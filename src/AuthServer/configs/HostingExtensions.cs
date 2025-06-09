@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Duende.IdentityServer.Services;
+using Serilog;
 
 namespace AuthServer.configs;
 
@@ -44,6 +45,9 @@ internal static class HostingExtensions
         builder.Services.AddAuthentication();
         // Adiciona serviço de autorização - Validar se o usuário tem permissão para acessar o recurso
         builder.Services.AddAuthorization();
+
+        // Serviço personalizado para incluir claims nos token de acesso
+        builder.Services.AddTransient<IProfileService, CustomProfileService>();
 
         return builder.Build();
     }
