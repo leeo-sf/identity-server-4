@@ -10,17 +10,31 @@ namespace UserManagement.API.Controllers;
 [ControllerName("test-authentication")]
 public class TestingAuthenticationController : ControllerBase
 {
-    [HttpGet("exemplo")]
-    [Authorize(Policy = "apis.exemplo")]
+    [HttpGet("pwa")]
+    [Authorize(Policy = "apis.pwa")]
     public async Task<IActionResult> ApisExemplo()
     {
         return Ok("Access allowed");
     }
 
-    [HttpGet("study")]
-    [Authorize(Policy = "apis.study")]
+    [HttpGet("app")]
+    [Authorize(Policy = "apis.app")]
     public async Task<IActionResult> ApisStudy()
     {
         return Ok("Access allowed");
+    }
+
+    [HttpGet("any-admin")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> AnyAdmin()
+    {
+        return Ok("Any admin user can access.");
+    }
+
+    [HttpGet("admin-with-scope-app")]
+    [Authorize(Policy = "admin.scope.app")]
+    public async Task<IActionResult> AdminWithScope()
+    {
+        return Ok("Only admin users with scope apis.app");
     }
 }

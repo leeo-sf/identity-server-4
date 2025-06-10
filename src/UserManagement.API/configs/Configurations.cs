@@ -26,11 +26,18 @@ public static class Configurations
 
         services.AddAuthorization(opt =>
         {
-            opt.AddPolicy("apis.exemplo", policy =>
-                policy.RequireClaim("scope", "apis_exemplo"));
+            opt.AddPolicy("apis.pwa", policy =>
+                policy.RequireClaim("scope", "pwa"));
 
-            opt.AddPolicy("apis.study", policy =>
-                policy.RequireClaim("scope", "apis_study_project"));
+            opt.AddPolicy("apis.app", policy =>
+                policy.RequireClaim("scope", "app"));
+
+            opt.AddPolicy("admin.scope.app", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole("Admin");
+                policy.RequireClaim("scope", "app");
+            });
         });
     }
 

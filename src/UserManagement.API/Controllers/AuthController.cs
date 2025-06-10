@@ -43,11 +43,11 @@ namespace UserManagement.API.Controllers
             return Ok(new { tokenResponse.Json });
         }
 
-        [HttpPost("with-user-credentials")]
-        public async Task<IActionResult> ProvaiderLogin([FromBody] LoginRequest model)
+        [HttpPost("app")]
+        public async Task<IActionResult> LoginApp([FromBody] LoginRequest model)
         {
             var client = new HttpClient();
-            var disco = await client.GetDiscoveryDocumentAsync(_config.GetSection("EndpointProvaider:authority").Value);
+            var disco = await client.GetDiscoveryDocumentAsync(_config.GetSection("app:authority").Value);
             if (disco.IsError)
             {
                 return BadRequest(new { disco.Error });
@@ -56,9 +56,36 @@ namespace UserManagement.API.Controllers
             var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
             {
                 Address = disco.TokenEndpoint,
-                ClientId = _config.GetSection("EndpointProvaider:client-id").Value!,
-                ClientSecret = _config.GetSection("EndpointProvaider:secret").Value!,
-                Scope = _config.GetSection("EndpointProvaider:audience").Value!,
+                ClientId = _config.GetSection("app:client-id").Value!,
+                ClientSecret = _config.GetSection("app:secret").Value!,
+                Scope = _config.GetSection("app:audience").Value!,
+                UserName = model.Email,
+                Password = model.Password
+            });
+            if (tokenResponse.IsError)
+            {
+                return BadRequest(new { disco.Error });
+            }
+
+            return Ok(new { tokenResponse.Json });
+        }
+
+        [HttpPost("pwa")]
+        public async Task<IActionResult> LoginPwa([FromBody] LoginRequest model)
+        {
+            var client = new HttpClient();
+            var disco = await client.GetDiscoveryDocumentAsync(_config.GetSection("pwa:authority").Value);
+            if (disco.IsError)
+            {
+                return BadRequest(new { disco.Error });
+            }
+
+            var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = _config.GetSection("pwa:client-id").Value!,
+                ClientSecret = _config.GetSection("pwa:secret").Value!,
+                Scope = _config.GetSection("pwa:audience").Value!,
                 UserName = model.Email,
                 Password = model.Password
             });
