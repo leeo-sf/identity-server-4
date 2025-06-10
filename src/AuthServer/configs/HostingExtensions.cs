@@ -37,7 +37,7 @@ internal static class HostingExtensions
         /* Clients que podem se autenticar e obter tokens neste servidor
          * Pode ser um SPA (Angular, React, ETC), app mobile, backend ETC.
         */
-        isBuilder.AddInMemoryClients(Config.Clients);
+        isBuilder.AddInMemoryClients(Config.Clients(builder.Configuration));
 
         /* Adiciona serviço de autenticação
          * Necessãrio para a aplicação reconhecer tokens, cookies etc.

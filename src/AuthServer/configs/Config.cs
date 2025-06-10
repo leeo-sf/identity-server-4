@@ -33,7 +33,7 @@ internal static class Config
      * Não se limite a essas configurações, você pode ter vários clients diferentes (por exemplo, 3 apps, 2 SPA, 4 API's ETC...)
      * As configurações abaixo são exemplos de clients
     */
-    public static IEnumerable<Client> Clients =>
+    public static IEnumerable<Client> Clients(IConfiguration config) =>
         new Client[]
         {
             /* Exemplo de um client frontend
@@ -60,10 +60,10 @@ internal static class Config
             */
             new Client
             {
-                ClientId = "apis.study.project",  // Id do client (deve ser único)
+                ClientId = config.GetSection("Clients:Apis_Example:client-id").Value!,  // Id do client (deve ser único)
                 ClientName = "API's de estudos",  // Nome do client para ser identificado de forma fácil
                 AllowedGrantTypes = GrantTypes.ClientCredentials,  // Tipo de fluxo de autenticação OAuth 2.0 (usado quando não há um usuário humano se autenticando)
-                ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },  // Segredo que o usuário usará para se logar (digamos que é uma senha)
+                ClientSecrets = { new Secret(config.GetSection("Clients:Apis_Example:secret").Value.Sha256()) },  // Segredo que o usuário usará para se logar (digamos que é uma senha)
                 
                 /* Dealhes importantes do AllowedScopes
                  * O que eu definir abaixo (por exemplo "email", "profile", "openid") não será incluso no access_token, mas sim no id_token
