@@ -26,6 +26,13 @@ internal static class Config
                 }
             },
             new ApiScope("apis_exemplo")
+            {
+                UserClaims =
+                {
+                    JwtClaimTypes.Name,
+                    JwtClaimTypes.Address
+                }
+            }
         };
 
     /* Define os clients que poderão se autenticar nesse provedor
@@ -70,6 +77,21 @@ internal static class Config
                  * O scope deve estar definido no IdentityResource caso contrário será gerado um erro
                 */ 
                 AllowedScopes = { "apis_study_project", "profile", "openid" },  // Escopos que esse cliente tem permissão de acesso nas nossas API's (deve ser configurado as permissões na API)
-            }
+            },
+
+            // Exemplo de com um endpoint sendo o "provedor" da identificação (recebendo as credenciais do cliente e repassando para o auth server)
+            new Client
+            {
+                ClientId = config.GetSection("Clients:Endpoint_provaider:client-id").Value!,  // Id do client (deve ser único)
+                ClientName = "Endpoint provaider login",  // Nome do client para ser identificado de forma fácil
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,  // Tipo de fluxo de autenticação OAuth 2.0 (usado quando não há um usuário humano se autenticando)
+                ClientSecrets = { new Secret(config.GetSection("Clients:Endpoint_provaider:secret").Value.Sha256()) },  // Segredo que o usuário usará para se logar (digamos que é uma senha)
+
+                /* Dealhes importantes do AllowedScopes
+                 * O que eu definir abaixo (por exemplo "email", "profile", "openid") não será incluso no access_token, mas sim no id_token
+                 * O scope deve estar definido no IdentityResource caso contrário será gerado um erro
+                */ 
+                AllowedScopes = { "apis_exemplo", "profile", "openid" },  // Escopos que esse cliente tem permissão de acesso nas nossas API's (deve ser configurado as permissões na API)
+            },
         };
 }

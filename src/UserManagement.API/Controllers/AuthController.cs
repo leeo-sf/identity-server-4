@@ -42,5 +42,32 @@ namespace UserManagement.API.Controllers
 
             return Ok(new { tokenResponse.Json });
         }
+
+        [HttpPost("with-user-credentials")]
+        public async Task<IActionResult> ProvaiderLogin([FromBody] LoginRequest model)
+        {
+            var client = new HttpClient();
+            var disco = await client.GetDiscoveryDocumentAsync(_config.GetSection("EndpointProvaider:authority").Value);
+            if (disco.IsError)
+            {
+                return BadRequest(new { disco.Error });
+            }
+
+            var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = _config.GetSection("EndpointProvaider:client-id").Value!,
+                ClientSecret = _config.GetSection("EndpointProvaider:secret").Value!,
+                Scope = _config.GetSection("EndpointProvaider:audience").Value!,
+                UserName = model.Email,
+                Password = model.Password
+            });
+            if (tokenResponse.IsError)
+            {
+                return BadRequest(new { disco.Error });
+            }
+
+            return Ok(new { tokenResponse.Json });
+        }
     }
 }
